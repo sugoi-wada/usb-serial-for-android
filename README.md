@@ -15,13 +15,11 @@ functions for use with your own protocols.
 
 ## Quick Start
 
-**1.** Download [usb-serial-for-android-v010.jar](http://usb-serial-for-android.googlecode.com/files/usb-serial-for-android-v010.jar)
+**1.** Check [Building From Source](https://github.com/sugoi-wada/usb-serial-for-android/wiki/Building-From-Source).
 
-**2.** Copy the jar to your Android project's `libs/` directory. (See [Android's FAQ](http://developer.android.com/guide/faq/commontasks.html#addexternallibrary) for help).
+**2.** Copy [device_filter.xml](http://usb-serial-for-android.googlecode.com/git/UsbSerialExamples/res/xml/device_filter.xml) to your project's `res/xml/` directory.
 
-**3.** Copy [device_filter.xml](http://usb-serial-for-android.googlecode.com/git/UsbSerialExamples/res/xml/device_filter.xml) to your project's `res/xml/` directory.
-
-**4.** Configure your `AndroidManifest.xml` to notify your app when a device is attached (see [Android USB Host documentation](http://developer.android.com/guide/topics/connectivity/usb/host.html#discovering-d) for help).  
+**3.** Configure your `AndroidManifest.xml` to notify your app when a device is attached (see [Android USB Host documentation](http://developer.android.com/guide/topics/connectivity/usb/host.html#discovering-d) for help).  
 
 ```xml
 <activity
@@ -36,7 +34,7 @@ functions for use with your own protocols.
 </activity>
 ```
 
-**5.** Use it! Example code snippet:
+**4.** Use it! Example code snippet:
 
 ```java
 // Get UsbManager from Android.
