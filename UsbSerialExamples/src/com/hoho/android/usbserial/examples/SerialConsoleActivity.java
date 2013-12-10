@@ -25,11 +25,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
-import com.hoho.android.usbserial.util.HexDump;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.util.concurrent.Executors;
 /**
  * Monitors a single {@link UsbSerialDriver} instance, showing all data
  * received.
- *
+ * 
  * @author mike wakerly (opensource@hoho.com)
  */
 public class SerialConsoleActivity extends Activity {
@@ -49,7 +49,6 @@ public class SerialConsoleActivity extends Activity {
     /**
      * Driver instance, passed in statically via
      * {@link #show(Context, UsbSerialDriver)}.
-     *
      * <p/>
      * This is a devious hack; it'd be cleaner to re-create the driver using
      * arguments passed in with the {@link #startActivity(Intent)} intent. We
@@ -69,21 +68,22 @@ public class SerialConsoleActivity extends Activity {
     private final SerialInputOutputManager.Listener mListener =
             new SerialInputOutputManager.Listener() {
 
-        @Override
-        public void onRunError(Exception e) {
-            Log.d(TAG, "Runner stopped.");
-        }
-
-        @Override
-        public void onNewData(final byte[] data) {
-            SerialConsoleActivity.this.runOnUiThread(new Runnable() {
                 @Override
-                public void run() {
-                    SerialConsoleActivity.this.updateReceivedData(data);
+                public void onRunError(Exception e) {
+                    Log.d(TAG, "Runner stopped.");
                 }
-            });
-        }
-    };
+
+                @Override
+                public void onNewData(final byte[] data) {
+                    SerialConsoleActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, new String(data) + "\n");
+                            SerialConsoleActivity.this.updateReceivedData(data);
+                        }
+                    });
+                }
+            };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,11 +92,14 @@ public class SerialConsoleActivity extends Activity {
         mTitleTextView = (TextView) findViewById(R.id.demoTitle);
         mDumpTextView = (TextView) findViewById(R.id.consoleText);
         mScrollView = (ScrollView) findViewById(R.id.demoScroller);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
         stopIoManager();
         if (sDriver != null) {
             try {
@@ -118,7 +121,8 @@ public class SerialConsoleActivity extends Activity {
         } else {
             try {
                 sDriver.open();
-                sDriver.setParameters(115200, 8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_NONE);
+                sDriver.setParameters(115200, 8, UsbSerialDriver.STOPBITS_1,
+                        UsbSerialDriver.PARITY_NONE);
             } catch (IOException e) {
                 Log.e(TAG, "Error setting up device: " + e.getMessage(), e);
                 mTitleTextView.setText("Error opening device: " + e.getMessage());
@@ -157,15 +161,17 @@ public class SerialConsoleActivity extends Activity {
     }
 
     private void updateReceivedData(byte[] data) {
-        final String message = "Read " + data.length + " bytes: \n"
-                + HexDump.dumpHexString(data) + "\n\n";
-        mDumpTextView.append(message);
+        // final String message = "Read " + data.length + " bytes: \n"
+        // + HexDump.dumpHexString(data) + "\n\n";
+        // mDumpTextView.append(message);
+
+        mDumpTextView.append("Read\n" + new String(data) + "\n");
         mScrollView.smoothScrollTo(0, mDumpTextView.getBottom());
     }
 
     /**
      * Starts the activity, using the supplied driver instance.
-     *
+     * 
      * @param context
      * @param driver
      */

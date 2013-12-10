@@ -49,7 +49,7 @@ import java.util.List;
 
 /**
  * Shows a {@link ListView} of available USB devices.
- *
+ * 
  * @author mike wakerly (opensource@hoho.com)
  */
 public class DeviceListActivity extends Activity {
@@ -100,18 +100,21 @@ public class DeviceListActivity extends Activity {
         setContentView(R.layout.main);
 
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+
         mListView = (ListView) findViewById(R.id.deviceList);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mProgressBarTitle = (TextView) findViewById(R.id.progressBarTitle);
 
-        mAdapter = new ArrayAdapter<DeviceEntry>(this, android.R.layout.simple_expandable_list_item_2, mEntries) {
+        mAdapter = new ArrayAdapter<DeviceEntry>(this,
+                android.R.layout.simple_expandable_list_item_2, mEntries) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 final TwoLineListItem row;
-                if (convertView == null){
+                if (convertView == null) {
                     final LayoutInflater inflater =
                             (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2, null);
+                    row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2,
+                            null);
                 } else {
                     row = (TwoLineListItem) convertView;
                 }
@@ -175,6 +178,7 @@ public class DeviceListActivity extends Activity {
                 SystemClock.sleep(1000);
                 final List<DeviceEntry> result = new ArrayList<DeviceEntry>();
                 for (final UsbDevice device : mUsbManager.getDeviceList().values()) {
+
                     final List<UsbSerialDriver> drivers =
                             UsbSerialProber.probeSingleDevice(mUsbManager, device);
                     Log.d(TAG, "Found usb device: " + device);
@@ -197,7 +201,7 @@ public class DeviceListActivity extends Activity {
                 mEntries.addAll(result);
                 mAdapter.notifyDataSetChanged();
                 mProgressBarTitle.setText(
-                        String.format("%s device(s) found",Integer.valueOf(mEntries.size())));
+                        String.format("%s device(s) found", Integer.valueOf(mEntries.size())));
                 hideProgressBar();
                 Log.d(TAG, "Done refreshing, " + mEntries.size() + " entries found.");
             }
